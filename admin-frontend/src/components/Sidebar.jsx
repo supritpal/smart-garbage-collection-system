@@ -4,21 +4,28 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from '../contexts/ThemeContext'
-import { X, Home, Settings, BarChart3, FileText, BookOpen, Image, TrendingUp, Users, Scale, ChevronDown, Users2, Clock, Trash2, Home as HomeIcon, MapPin, CalendarDays, Newspaper, Calendar, MessageSquare, Mail } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import {
+  X, Home, Settings, BarChart3, FileText, BookOpen, Image, TrendingUp,
+  Users, Scale, ChevronDown, Users2, Clock, Trash2, Home as HomeIcon,
+  MapPin, CalendarDays, Newspaper, Calendar, MessageSquare, Mail,
+  CreditCard, Layers, LifeBuoy
+} from 'lucide-react'
 import logo from '../assets/images/logo.png'
 
 export default function Sidebar({ isOpen, onClose }) {
   const { isDark } = useTheme()
+  const { isSuperAdmin, role } = useAuth()
   const pathname = usePathname() || ""
-  const isOperationalActive = pathname.startsWith('/employee') || 
-                               pathname.startsWith('/attendance') || 
-                               pathname.startsWith('/dustbin') || 
-                               pathname.startsWith('/household') ||
-                               pathname.startsWith('/ward') ||
-                               pathname.startsWith('/route')
+  const isOperationalActive = pathname.startsWith('/employee') ||
+    pathname.startsWith('/attendance') ||
+    pathname.startsWith('/dustbin') ||
+    pathname.startsWith('/household') ||
+    pathname.startsWith('/ward') ||
+    pathname.startsWith('/route')
 
   const [expandOperational, setExpandOperational] = useState(isOperationalActive)
-  
+
   useEffect(() => {
     if (isOperationalActive) setExpandOperational(true)
   }, [isOperationalActive])
@@ -35,11 +42,10 @@ export default function Sidebar({ isOpen, onClose }) {
     return (
       <Link
         href={to}
-        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group relative ${
-          active
+        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group relative ${active
             ? 'bg-gradient-to-r from-[#1f9e9a] to-[#16847f] text-white shadow-md shadow-teal-500/25'
             : `${!isDark ? '!text-black' : 'text-slate-300'} hover:text-black dark:hover:text-white hover:bg-teal-50 dark:hover:bg-teal-900/20`
-        }`}
+          }`}
       >
         {active && (
           <span className="absolute left-0 inset-y-0 w-0.5 rounded-r bg-teal-300/60" />
@@ -57,13 +63,13 @@ export default function Sidebar({ isOpen, onClose }) {
   const logoSrc = typeof logo === 'object' && logo.src ? logo.src : logo
 
   return (
-    <div 
+    <div
       className={`fixed left-0 top-0 w-64 h-screen overflow-y-auto flex flex-col transition-all duration-300 z-[10001] 
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         border-r lg:border-r-0`}
       style={{
-        background: isDark 
-          ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' 
+        background: isDark
+          ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
           : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
         borderRight: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #e2e8f0'
       }}
@@ -73,13 +79,17 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="flex items-center gap-3">
           <img src={logoSrc} alt="EcoSyz Logo" className="w-9 h-9 object-contain drop-shadow-md" />
           <div>
-            <p className={`${!isDark ? '!text-black' : 'text-gray-100'} font-bold text-sm leading-tight`}>EcoSyz Admin</p>
-            <p className={`${!isDark ? '!text-slate-800' : 'text-gray-500'} text-[10px] font-medium`}>Panchayat Management</p>
+            <p className={`${!isDark ? '!text-black' : 'text-gray-100'} font-bold text-sm leading-tight`}>
+              {isSuperAdmin ? 'EcoSyz Super Admin' : 'EcoSyz Admin'}
+            </p>
+            <p className={`${!isDark ? '!text-slate-800' : 'text-gray-500'} text-[10px] font-medium`}>
+              {isSuperAdmin ? 'Platform Management' : 'Panchayat Management'}
+            </p>
           </div>
         </div>
 
         {/* Mobile Close Button */}
-        <button 
+        <button
           onClick={onClose}
           className="lg:hidden absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
@@ -89,6 +99,18 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+
+        {/* Super Admin Controls (Only visible to Super Admins) */}
+        {isSuperAdmin && (
+          <div>
+            <SectionLabel label="Super Admin Controls" />
+            <div className="space-y-1">
+              <NavLink to="/subscriptions" icon={Layers} label="Subscription Plans" />
+              <NavLink to="/payments" icon={CreditCard} label="Payment Monitoring" />
+              <NavLink to="/support" icon={LifeBuoy} label="Support & Queries" />
+            </div>
+          </div>
+        )}
 
         {/* Main */}
         <div>
@@ -105,11 +127,10 @@ export default function Sidebar({ isOpen, onClose }) {
             <button
               type="button"
               onClick={() => setExpandOperational(!expandOperational)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group ${
-                isOperationalActive
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group ${isOperationalActive
                   ? 'bg-gradient-to-r from-[#1f9e9a] to-[#16847f] text-white shadow-md shadow-teal-500/25'
                   : `${!isDark ? '!text-black' : 'text-slate-300'} hover:text-black dark:hover:text-white hover:bg-teal-50 dark:hover:bg-teal-900/20`
-              }`}
+                }`}
             >
               <Settings size={18} className={isOperationalActive ? 'text-white' : `${!isDark ? '!text-slate-800' : 'text-slate-400'} group-hover:text-teal-600 transition-colors`} />
               <span className="text-sm font-medium flex-1 text-left">Operational Mgmt</span>
@@ -172,12 +193,18 @@ export default function Sidebar({ isOpen, onClose }) {
       <div className={`px-4 py-3 border-t flex-shrink-0 ${isDark ? 'border-white/5 bg-gray-900/50' : 'border-gray-100 bg-white'}`}>
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #1f9e9a, #22c55e)' }}
+            style={{
+              background: isSuperAdmin
+                ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+                : 'linear-gradient(135deg, #1f9e9a, #22c55e)'
+            }}
           >
-            A
+            {isSuperAdmin ? 'S' : 'A'}
           </div>
           <div className="min-w-0">
-            <p className={`${!isDark ? '!text-black' : 'text-gray-100'} text-xs font-bold truncate`}>Panchayat Admin</p>
+            <p className={`${!isDark ? '!text-black' : 'text-gray-100'} text-xs font-bold truncate`}>
+              {isSuperAdmin ? 'Super Admin' : 'Panchayat Admin'}
+            </p>
             <p className={`${!isDark ? '!text-slate-800' : 'text-gray-500'} text-[10px]`}>ecosyz.in</p>
           </div>
         </div>

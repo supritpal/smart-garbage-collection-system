@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider, ThemeWatcher } from "../contexts/ThemeContext";
+import { AuthProvider } from "../contexts/AuthContext";
 import GlobalScrollLock from "./GlobalScrollLock";
 
 export default function Providers({ children }) {
@@ -22,24 +23,26 @@ export default function Providers({ children }) {
 
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <ThemeWatcher />
-        <GlobalScrollLock />
-        {children}
-        <ToastContainer
-          position="top-right"
-          autoClose={4000}
-          hideProgressBar={false}
-          newestOnTop={true}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          limit={3}
-        />
-      </QueryClientProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeWatcher />
+          <GlobalScrollLock />
+          {children}
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            hideProgressBar={false}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            limit={3}
+          />
+        </QueryClientProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

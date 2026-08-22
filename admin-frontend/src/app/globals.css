@@ -310,3 +310,20 @@ tbody tr:last-child {
 .Toastify__progress-bar--success { background: #16a34a !important; }
 .Toastify__progress-bar--error { background: #ef4444 !important; }
 .Toastify__progress-bar--info { background: #1f9e9a !important; }
+
+/* Custom slim scrollbar for tables and modal lists */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
