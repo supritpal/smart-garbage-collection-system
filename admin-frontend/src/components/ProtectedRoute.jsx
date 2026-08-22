@@ -28,18 +28,17 @@ export default function ProtectedRoute({ children }) {
     const checkAuth = async () => {
       try {
         const { data: meData } = await api.get("/auth/me");
+        const role = meData?.user?.role;
+        const normalizedRole = String(role || "").toUpperCase();
+        const isSuperAdmin = normalizedRole === "COMPANY_ADMIN" || normalizedRole === "SUPER_ADMIN" || normalizedRole === "SUPERADMIN";
 
-        // Prevent Super Admin from entering Panchayat Admin panel
-        if (meData?.user?.role === "COMPANY_ADMIN") {
-          toast.error("Super Admins must use the Super Admin panel.");
-          if (alive) {
-            setStatus("unauthorized");
-            router.replace("/");
-          }
+        // Super admins have platform-wide access and do not require a panchayat subscription
+        if (isSuperAdmin) {
+          if (alive) setStatus("authorized");
           return;
         }
 
-        // Check subscription status
+        // Check subscription status for Panchayat Admins
         try {
           const { data } = await api.get("/auth/profile");
           const sub = data?.subscription;

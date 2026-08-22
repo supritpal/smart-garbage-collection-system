@@ -7,12 +7,14 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from '../contexts/ThemeContext'
+import { useAuth } from '../contexts/AuthContext'
 import LogoutConfirmation from './LogoutConfirmation'
 import api from '../api/axios'
 
 export default function TopHeader({ onMenuClick }) {
   const router = useRouter()
   const { isDark, toggleTheme } = useTheme()
+  const { user, isSuperAdmin, logout: authLogout } = useAuth()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showResults, setShowResults] = useState(false)
@@ -229,8 +231,15 @@ export default function TopHeader({ onMenuClick }) {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-2 p-1 lg:pl-2 lg:pr-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-xs font-black shadow-sm">
-                A
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-sm"
+                style={{
+                  background: isSuperAdmin
+                    ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+                    : 'linear-gradient(135deg, #1f9e9a, #22c55e)'
+                }}
+              >
+                {isSuperAdmin ? 'S' : 'A'}
               </div>
               <ChevronDown size={14} className={`hidden lg:block transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}
                 style={{ color: isDark ? '#94a3b8' : '#9ca3af' }} />
@@ -240,7 +249,9 @@ export default function TopHeader({ onMenuClick }) {
               <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden z-50">
                 <div className="px-5 py-4 border-b border-gray-50 dark:border-gray-700/50">
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Signed in as</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Panchayat Admin</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                    {isSuperAdmin ? 'Super Admin' : (user?.name || 'Panchayat Admin')}
+                  </p>
                 </div>
                 <div className="p-1.5 font-bold">
                   <button onClick={handleProfileSettings} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-gray-600 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:text-teal-600 dark:hover:text-teal-400 rounded-xl transition-all">
